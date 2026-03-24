@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Lock } from "lucide-react";
+import { Lock, Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAdminLogin } from "@workspace/api-client-react";
@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [, setLocation] = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();
@@ -60,13 +61,23 @@ export default function AdminLogin() {
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground ml-1">Password</label>
-            <Input 
-              type="password" 
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="h-12 rounded-xl bg-muted/50" 
-              required 
-            />
+            <div className="relative">
+              <Input 
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="h-12 rounded-xl bg-muted/50 pr-12" 
+                required 
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
           <Button 
             type="submit" 
