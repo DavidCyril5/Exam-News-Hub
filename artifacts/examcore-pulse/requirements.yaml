@@ -1,0 +1,24 @@
+packages:
+  "framer-motion": "For page transitions and micro-interactions"
+  "date-fns": "For formatting publish dates nicely"
+  "lucide-react": "For crisp, beautiful icons across the UI"
+  "react-markdown": "For rendering rich text post content"
+  "react-dropzone": "For beautiful drag-and-drop image uploads in the admin panel"
+  "embla-carousel-react": "For the timetable/image gallery carousel"
+
+images:
+  - path: "artifacts/examcore-pulse/public/images/hero-bg.png"
+    description: "Abstract luxurious dark navy background with subtle gold geometric lines and soft light leaks, premium editorial feel"
+    aspect_ratio: "16:9"
+  - path: "artifacts/examcore-pulse/public/images/logo.png"
+    description: "A minimal, modern logo mark for an education news portal, featuring a subtle graduation cap or pulse wave motif, golden colored on transparent background"
+    aspect_ratio: "1:1"
+  - path: "artifacts/examcore-pulse/public/images/placeholder-news.png"
+    description: "Abstract architectural or academic composition in navy and gold colors, acting as a beautiful placeholder for news articles"
+    aspect_ratio: "16:9"
+
+notes:
+  - Wouter Link uses direct className, no nested a tags
+  - @workspace/api-client-react is used for all API calls
+  - Admin endpoints require Authorization: Bearer {token}
+  - Visitor identification is faked via localStorage random UUID

@@ -11,22 +11,24 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **Package manager**: pnpm
 - **TypeScript version**: 5.9
 - **API framework**: Express 5
-- **Database**: PostgreSQL + Drizzle ORM
+- **Database**: MongoDB + Mongoose (MONGODB_URI env var)
 - **Validation**: Zod (`zod/v4`), `drizzle-zod`
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
+- **Auth**: JWT (jsonwebtoken) for admin sessions
 
 ## Structure
 
 ```text
 artifacts-monorepo/
 ├── artifacts/              # Deployable applications
-│   └── api-server/         # Express API server
+│   ├── api-server/         # Express API server
+│   └── examcore-pulse/     # EXAMCORE PULSE React frontend
 ├── lib/                    # Shared libraries
 │   ├── api-spec/           # OpenAPI spec + Orval codegen config
 │   ├── api-client-react/   # Generated React Query hooks
 │   ├── api-zod/            # Generated Zod schemas from OpenAPI
-│   └── db/                 # Drizzle ORM schema + DB connection
+│   └── db/                 # Drizzle ORM schema + DB connection (unused - using MongoDB)
 ├── scripts/                # Utility scripts (single workspace package)
 │   └── src/                # Individual .ts scripts, run via `pnpm --filter @workspace/scripts run <script>`
 ├── pnpm-workspace.yaml     # pnpm workspace (artifacts/*, lib/*, lib/integrations/*, scripts)
@@ -34,6 +36,52 @@ artifacts-monorepo/
 ├── tsconfig.json           # Root TS project references
 └── package.json            # Root package with hoisted devDeps
 ```
+
+## EXAMCORE PULSE Project
+
+### Overview
+Nigerian exam news website with admin control panel.
+
+### Features
+- Public news website: JAMB, WAEC, NECO, GCE, POST-UTME, NABTEB categories
+- Like system (heart) with IP-based identification
+- View counter (eye icon) per post
+- Comments system with auto-generated user profiles by IP
+- Multi-image gallery posts (for timetables etc)
+- Image upload via `https://rynekoo-api.hf.space/tools/uploader/alibaba`
+
+### Admin Panel
+- URL: `/admin/login`
+- Email: `apextutors911@gmail.com`
+- Password: `Emergency911@`
+- Features: Post management, category management, comment moderation, dashboard stats
+
+### Backend Routes
+- `GET/POST /api/categories` — categories list and create
+- `DELETE /api/categories/:id` — delete category
+- `GET/POST /api/posts` — posts list and create
+- `GET/PUT/DELETE /api/posts/:id` — single post CRUD
+- `POST /api/posts/:id/like` — toggle like
+- `GET/POST /api/posts/:id/comments` — comments
+- `DELETE /api/comments/:id` — delete comment (admin)
+- `POST /api/users/profile` — get/create user profile by IP hash
+- `POST /api/admin/login` — admin authentication
+- `GET /api/admin/posts` — admin posts list (all statuses)
+- `GET /api/admin/stats` — dashboard statistics
+- `POST /api/upload` — image upload (proxies to alibaba CDN)
+
+### MongoDB Models
+- `Category` — exam categories with name, slug, color
+- `Post` — news posts with title, content, images[], likedBy[], views
+- `Comment` — comments with IP hash, display name, avatar
+- `UserProfile` — visitor profiles keyed by IP hash
+
+### Environment Variables
+- `MONGODB_URI` — MongoDB connection string
+- `ADMIN_EMAIL` — admin email
+- `ADMIN_PASSWORD` — admin password
+- `JWT_SECRET` — JWT signing secret
+- `IMAGE_UPLOAD_API` — image upload endpoint
 
 ## TypeScript & Composite Projects
 
@@ -47,50 +95,3 @@ Every package extends `tsconfig.base.json` which sets `composite: true`. The roo
 
 - `pnpm run build` — runs `typecheck` first, then recursively runs `build` in all packages that define it
 - `pnpm run typecheck` — runs `tsc --build --emitDeclarationOnly` using project references
-
-## Packages
-
-### `artifacts/api-server` (`@workspace/api-server`)
-
-Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` for request and response validation and `@workspace/db` for persistence.
-
-- Entry: `src/index.ts` — reads `PORT`, starts Express
-- App setup: `src/app.ts` — mounts CORS, JSON/urlencoded parsing, routes at `/api`
-- Routes: `src/routes/index.ts` mounts sub-routers; `src/routes/health.ts` exposes `GET /health` (full path: `/api/health`)
-- Depends on: `@workspace/db`, `@workspace/api-zod`
-- `pnpm --filter @workspace/api-server run dev` — run the dev server
-- `pnpm --filter @workspace/api-server run build` — production esbuild bundle (`dist/index.cjs`)
-- Build bundles an allowlist of deps (express, cors, pg, drizzle-orm, zod, etc.) and externalizes the rest
-
-### `lib/db` (`@workspace/db`)
-
-Database layer using Drizzle ORM with PostgreSQL. Exports a Drizzle client instance and schema models.
-
-- `src/index.ts` — creates a `Pool` + Drizzle instance, exports schema
-- `src/schema/index.ts` — barrel re-export of all models
-- `src/schema/<modelname>.ts` — table definitions with `drizzle-zod` insert schemas (no models definitions exist right now)
-- `drizzle.config.ts` — Drizzle Kit config (requires `DATABASE_URL`, automatically provided by Replit)
-- Exports: `.` (pool, db, schema), `./schema` (schema only)
-
-Production migrations are handled by Replit when publishing. In development, we just use `pnpm --filter @workspace/db run push`, and we fallback to `pnpm --filter @workspace/db run push-force`.
-
-### `lib/api-spec` (`@workspace/api-spec`)
-
-Owns the OpenAPI 3.1 spec (`openapi.yaml`) and the Orval config (`orval.config.ts`). Running codegen produces output into two sibling packages:
-
-1. `lib/api-client-react/src/generated/` — React Query hooks + fetch client
-2. `lib/api-zod/src/generated/` — Zod schemas
-
-Run codegen: `pnpm --filter @workspace/api-spec run codegen`
-
-### `lib/api-zod` (`@workspace/api-zod`)
-
-Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used by `api-server` for response validation.
-
-### `lib/api-client-react` (`@workspace/api-client-react`)
-
-Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
-
-### `scripts` (`@workspace/scripts`)
-
-Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.

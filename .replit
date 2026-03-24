@@ -24,3 +24,12 @@ expertMode = true
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
+
+[userenv]
+
+[userenv.shared]
+MONGODB_URI = "mongodb+srv://davidcyrildev:85200555@davidcyriltech.qwkqlbf.mongodb.net/?appName=davidcyriltech"
+ADMIN_EMAIL = "apextutors911@gmail.com"
+ADMIN_PASSWORD = "Emergency911@"
+JWT_SECRET = "examcore_pulse_secret_key_2026_ultra_secure"
+IMAGE_UPLOAD_API = "https://rynekoo-api.hf.space/tools/uploader/alibaba"
