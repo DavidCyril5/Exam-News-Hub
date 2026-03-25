@@ -1,14 +1,8 @@
 {
   "version": 2,
   "installCommand": "pnpm install",
-  "buildCommand": "pnpm --filter @workspace/examcore-pulse run build",
+  "buildCommand": "PORT=3000 BASE_PATH=/ pnpm --filter @workspace/examcore-pulse run build",
   "outputDirectory": "artifacts/examcore-pulse/dist/public",
-  "build": {
-    "env": {
-      "PORT": "3000",
-      "BASE_PATH": "/"
-    }
-  },
   "functions": {
     "api/index.ts": {
       "memory": 1024,
