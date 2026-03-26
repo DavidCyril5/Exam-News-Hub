@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "EXAMCORE PULSE"
+version = "1.0.0"
+id = "artifacts/examcore-pulse"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22967
+
+[services.development]
+run = "pnpm --filter @workspace/examcore-pulse run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/examcore-pulse", "run", "build" ]
+publicDir = "artifacts/examcore-pulse/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22967"
+BASE_PATH = "/"
