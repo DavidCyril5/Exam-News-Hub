@@ -1,6 +1,9 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
+import path from "path";
+import { existsSync } from "fs";
+import { fileURLToPath } from "url";
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { connectMongo } from "./db/mongodb";
@@ -35,5 +38,18 @@ connectMongo().catch((err) => {
 });
 
 app.use("/api", router);
+
+// Resolve relative to this compiled file (artifacts/api-server/dist/)
+// so it works regardless of the process working directory
+const frontendDist = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../examcore-pulse/dist/public",
+);
+if (existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(frontendDist, "index.html"));
+  });
+}
 
 export default app;
