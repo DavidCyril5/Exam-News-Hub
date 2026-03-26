@@ -45,11 +45,15 @@ const frontendDist = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../examcore-pulse/dist/public",
 );
-if (existsSync(frontendDist)) {
-  app.use(express.static(frontendDist));
-  app.get("*", (_req, res) => {
-    res.sendFile(path.join(frontendDist, "index.html"));
-  });
-}
+logger.info({ frontendDist, exists: existsSync(frontendDist) }, "Frontend static path");
+app.use(express.static(frontendDist));
+app.get("/{*path}", (_req, res) => {
+  const indexFile = path.join(frontendDist, "index.html");
+  if (existsSync(indexFile)) {
+    res.sendFile(indexFile);
+  } else {
+    res.status(404).json({ error: "Frontend not built", frontendDist });
+  }
+});
 
 export default app;
