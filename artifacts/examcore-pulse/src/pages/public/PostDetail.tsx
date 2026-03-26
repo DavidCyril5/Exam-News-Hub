@@ -144,7 +144,7 @@ export default function PostDetail() {
               {post.category.name}
             </Badge>
           )}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground leading-tight mb-6">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground leading-tight mb-6">
             {post.title}
           </h1>
           <div className="flex flex-wrap items-center justify-center gap-6 text-muted-foreground text-sm font-medium">
@@ -216,14 +216,14 @@ export default function PostDetail() {
         <section id="comments">
           <h3 className="text-2xl font-serif font-bold mb-8">Discussion ({post.commentsCount || 0})</h3>
           
-          <form onSubmit={handleCommentSubmit} className="mb-12 relative">
+          <form onSubmit={handleCommentSubmit} className="mb-12 flex flex-col gap-3">
             <Textarea 
               placeholder="What are your thoughts on this?"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              className="min-h-[120px] rounded-2xl resize-none pb-14 bg-muted/30 border-border/50 focus:bg-background"
+              className="min-h-[120px] rounded-2xl resize-none bg-muted/30 border-border/50 focus:bg-background"
             />
-            <div className="absolute bottom-3 right-3">
+            <div className="flex justify-end">
               <Button type="submit" disabled={!commentText.trim() || addCommentMutation.isPending} className="rounded-full px-6">
                 {addCommentMutation.isPending ? "Posting..." : "Post Comment"}
               </Button>

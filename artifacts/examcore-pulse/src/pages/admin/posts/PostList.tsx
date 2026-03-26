@@ -38,12 +38,12 @@ export default function AdminPostList() {
 
   return (
     <AdminLayout>
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-foreground">Manage Posts</h1>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-foreground">Manage Posts</h1>
           <p className="text-muted-foreground mt-1">Create, edit, and publish your news articles.</p>
         </div>
-        <Button asChild className="rounded-xl shadow-lg shadow-primary/20">
+        <Button asChild className="rounded-xl shadow-lg shadow-primary/20 self-start sm:self-auto">
           <Link href="/admin/posts/new">
             <PlusCircle className="w-5 h-5 mr-2" />
             New Post
