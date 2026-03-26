@@ -1,0 +1,45 @@
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://exam-news-hub.onrender.com
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Your service is live 🎉
+{"level":30,"time":1774528109929,"pid":69,"hostname":"srv-d72hu5vdiees739pdav0-hibernate-5f45f5bb84-v9q8m","req":{"id":2,"method":"GET","url":"/"},"res":{"statusCode":404},"responseTime":2,"msg":"request completed"}
+{"level":30,"time":1774528106837,"pid":69,"hostname":"srv-d72hu5vdiees739pdav0-hibernate-5f45f5bb84-v9q8m","msg":"Connected to MongoDB"}
+{"level":30,"time":1774528105450,"pid":69,"hostname":"srv-d72hu5vdiees739pdav0-hibernate-5f45f5bb84-v9q8m","req":{"id":1,"method":"HEAD","url":"/"},"res":{"statusCode":404},"responseTime":8,"msg":"request completed"}
+{"level":30,"time":1774528105149,"pid":69,"hostname":"srv-d72hu5vdiees739pdav0-hibernate-5f45f5bb84-v9q8m","port":5000,"msg":"Server listening"}
+==> Running 'node --enable-source-maps artifacts/api-server/dist/index.mjs'
+==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+==> New primary port detected: 5000. Restarting deploy to update network configuration...
+{"level":30,"time":1774528044116,"pid":69,"hostname":"srv-d72hu5vdiees739pdav0-hibernate-7655f9f75d-mxvbr","msg":"Connected to MongoDB"}
+{"level":30,"time":1774528043039,"pid":69,"hostname":"srv-d72hu5vdiees739pdav0-hibernate-7655f9f75d-mxvbr","req":{"id":1,"method":"HEAD","url":"/"},"res":{"statusCode":404},"responseTime":4,"msg":"request completed"}
+{"level":30,"time":1774528042598,"pid":69,"hostname":"srv-d72hu5vdiees739pdav0-hibernate-7655f9f75d-mxvbr","port":5000,"msg":"Server listening"}
+==> Running 'node --enable-source-maps artifacts/api-server/dist/index.mjs'
+==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+==> Deploying...
+==> Build successful 🎉
+==> Uploaded in 5.6s. Compression took 5.8s
+==> Uploading build...
+⚡ Done in 832ms
+  dist/thread-stream-worker.mjs.map   12.0kb
+  dist/pino-pretty.mjs.map           203.9kb
+  dist/pino-file.mjs.map             229.0kb
+  dist/pino-worker.mjs.map           256.9kb
+  dist/index.mjs.map                   8.9mb
+  dist/thread-stream-worker.mjs        7.3kb
+  dist/pino-pretty.mjs               114.6kb
+  dist/pino-file.mjs                 142.1kb
+  dist/pino-worker.mjs               153.4kb
+  dist/index.mjs                       4.9mb ⚠️
+> node ./build.mjs
+> @workspace/api-server@0.0.0 build /opt/render/project/src/artifacts/api-server
+✓ built in 4.34s
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Using dynamic import() to code-split the application
+(!) Some chunks are larger than 500 kB after minification. Consider:
+dist/public/assets/index-DW_XW0Ro.js   543.39 kB │ gzip: 169.77 kB
+dist/public/assets/index-BdU09vvE.css   99.22 kB │ gzip:  16.33 kB
+dist/public/index.html                   0.73 kB │ gzip:   0.42 kB
+computing gzip size...
