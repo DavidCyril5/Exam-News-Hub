@@ -2,20 +2,16 @@
   "version": 2,
   "builds": [
     {
-      "src": "artifacts/examcore-pulse/package.json",
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "buildCommand": "PORT=3000 BASE_PATH=/ pnpm run build",
-        "distDir": "dist/public"
+        "buildCommand": "PORT=3000 BASE_PATH=/ pnpm --filter @workspace/examcore-pulse run build",
+        "distDir": "artifacts/examcore-pulse/dist/public"
       }
     },
     {
       "src": "api/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "maxDuration": 30,
-        "memory": 1024
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
