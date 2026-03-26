@@ -1,19 +1,7 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "buildCommand": "PORT=3000 BASE_PATH=/ pnpm --filter @workspace/examcore-pulse run build",
-        "distDir": "artifacts/examcore-pulse/dist/public"
-      }
-    },
-    {
-      "src": "api/index.ts",
-      "use": "@vercel/node"
-    }
-  ],
+  "installCommand": "pnpm install",
+  "buildCommand": "PORT=3000 BASE_PATH=/ pnpm --filter @workspace/examcore-pulse run build && mkdir -p public && cp -r artifacts/examcore-pulse/dist/public/. public/",
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/index.ts" },
     { "handle": "filesystem" },
