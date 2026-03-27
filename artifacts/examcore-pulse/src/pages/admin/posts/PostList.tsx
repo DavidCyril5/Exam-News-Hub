@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { getAuthHeaders } from "@/lib/utils";
 import { useGetAdminPosts, useDeletePost } from "@workspace/api-client-react";
 
 export default function AdminPostList() {
@@ -26,7 +25,6 @@ export default function AdminPostList() {
       deleteMutation.mutate(
         { id },
         {
-          request: { headers: getAuthHeaders() },
           onSuccess: () => {
             toast({ title: "Post deleted" });
             refetch();

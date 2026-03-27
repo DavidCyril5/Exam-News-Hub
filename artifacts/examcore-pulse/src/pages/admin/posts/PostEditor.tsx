@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { getAuthHeaders } from "@/lib/utils";
 import { 
   useGetCategories, 
   useCreatePost, 
@@ -65,7 +64,6 @@ export default function PostEditor() {
     uploadMutation.mutate(
       { data: { file } },
       {
-        request: { headers: getAuthHeaders() },
         onSuccess: (res) => {
           setCoverImage(res.url);
           toast({ title: "Cover image uploaded" });
@@ -82,7 +80,6 @@ export default function PostEditor() {
     uploadMutation.mutate(
       { data: { file } },
       {
-        request: { headers: getAuthHeaders() },
         onSuccess: (res) => {
           setImages(prev => [...prev, { url: res.url, title: "", caption: "" }]);
           toast({ title: "Gallery image added" });
@@ -104,7 +101,6 @@ export default function PostEditor() {
     };
 
     const options = {
-      request: { headers: getAuthHeaders() },
       onSuccess: () => {
         toast({ title: `Post ${isEditing ? 'updated' : 'created'} successfully!` });
         setLocation("/admin/posts");

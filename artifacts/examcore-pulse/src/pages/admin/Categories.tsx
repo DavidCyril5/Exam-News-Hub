@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { getAuthHeaders } from "@/lib/utils";
 import { useGetCategories, useCreateCategory, useDeleteCategory } from "@workspace/api-client-react";
 
 export default function AdminCategories() {
@@ -24,7 +23,6 @@ export default function AdminCategories() {
     createMutation.mutate(
       { data: { name: newCatName, description: newCatDesc } },
       {
-        request: { headers: getAuthHeaders() },
         onSuccess: () => {
           setNewCatName("");
           setNewCatDesc("");
@@ -40,7 +38,6 @@ export default function AdminCategories() {
       deleteMutation.mutate(
         { id },
         {
-          request: { headers: getAuthHeaders() },
           onSuccess: () => {
             refetch();
             toast({ title: "Category deleted" });
