@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useLocation, Link } from "wouter";
-import { FileText, Eye, Heart, MessageCircle } from "lucide-react";
+import { FileText, Eye, Heart, MessageCircle, Clock } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useGetAdminStats } from "@workspace/api-client-react";
 
@@ -35,6 +36,25 @@ export default function AdminDashboard() {
         </div>
       ) : stats ? (
         <>
+          {stats.pendingComments > 0 && (
+            <div className="mb-6 flex items-center gap-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl px-5 py-4">
+              <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center flex-shrink-0">
+                <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-amber-800 dark:text-amber-300">
+                  {stats.pendingComments} comment{stats.pendingComments !== 1 ? "s" : ""} awaiting approval
+                </p>
+                <p className="text-sm text-amber-700 dark:text-amber-400">Review and approve pending comments to make them visible on posts.</p>
+              </div>
+              <Link href="/admin/comments">
+                <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white shrink-0">
+                  Review Now
+                </Button>
+              </Link>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             <StatsCard title="Total Posts" value={stats.totalPosts} icon={<FileText className="text-blue-500" />} />
             <StatsCard title="Total Views" value={stats.totalViews} icon={<Eye className="text-emerald-500" />} />

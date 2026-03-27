@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { Comment } from "../db/models/Comment";
 import { Post } from "../db/models/Post";
-import { requireAdmin } from "../middlewares/auth";
 
 const router = Router({ mergeParams: true });
 
@@ -30,7 +29,7 @@ function getColor(ipHash: string): string {
 
 router.get("/:postId/comments", async (req, res) => {
   try {
-    const comments = await Comment.find({ postId: req.params.postId })
+    const comments = await Comment.find({ postId: req.params.postId, approved: true })
       .sort({ createdAt: -1 })
       .lean();
     res.json(
@@ -70,6 +69,7 @@ router.post("/:postId/comments", async (req, res) => {
       avatarColor,
       avatarInitials,
       content,
+      approved: false,
     });
 
     res.status(201).json({

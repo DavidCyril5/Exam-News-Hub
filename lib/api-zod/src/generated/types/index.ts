@@ -7,15 +7,20 @@
  */
 
 export * from "./addCommentInput";
+export * from "./adminComment";
+export * from "./adminCommentsPage";
 export * from "./adminLoginInput";
 export * from "./adminLoginResponse";
 export * from "./adminLoginResponseAdmin";
 export * from "./adminStats";
+export * from "./approveCommentInput";
 export * from "./category";
 export * from "./comment";
 export * from "./createCategoryInput";
 export * from "./createPostInput";
 export * from "./createPostInputStatus";
+export * from "./getAdminCommentsParams";
+export * from "./getAdminCommentsStatus";
 export * from "./getAdminPostsParams";
 export * from "./getAdminPostsStatus";
 export * from "./getPostsParams";

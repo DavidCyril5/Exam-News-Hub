@@ -81,9 +81,10 @@ export default function PostDetail() {
       {
         onSuccess: () => {
           setCommentText("");
-          refetchComments();
-          refetchPost();
-          toast({ title: "Comment added!" });
+          toast({
+            title: "Comment submitted!",
+            description: "Your comment is awaiting approval and will appear once reviewed.",
+          });
         }
       }
     );

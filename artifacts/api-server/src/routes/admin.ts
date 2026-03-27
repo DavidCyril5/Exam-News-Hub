@@ -74,13 +74,14 @@ router.get("/posts", requireAdmin, async (req, res) => {
 
 router.get("/stats", requireAdmin, async (req, res) => {
   try {
-    const [totalPosts, publishedPosts, draftPosts, totalCategories, totalComments] =
+    const [totalPosts, publishedPosts, draftPosts, totalCategories, totalComments, pendingComments] =
       await Promise.all([
         Post.countDocuments(),
         Post.countDocuments({ status: "published" }),
         Post.countDocuments({ status: "draft" }),
         Category.countDocuments(),
-        Comment.countDocuments(),
+        Comment.countDocuments({ approved: true }),
+        Comment.countDocuments({ approved: false }),
       ]);
 
     const viewsAgg = await Post.aggregate([
@@ -111,6 +112,7 @@ router.get("/stats", requireAdmin, async (req, res) => {
       totalViews: viewsAgg[0]?.totalViews || 0,
       totalLikes: likesAgg[0]?.totalLikes || 0,
       totalComments,
+      pendingComments,
       totalCategories,
       recentPosts,
     });
