@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
-import { getAuthHeaders } from "@/lib/utils";
 import { useGetAdminStats } from "@workspace/api-client-react";
 
 export default function AdminDashboard() {
@@ -17,9 +16,7 @@ export default function AdminDashboard() {
     if (!isAuthenticated) setLocation("/admin/login");
   }, [isAuthenticated, setLocation]);
 
-  const { data: stats, isLoading } = useGetAdminStats({
-    request: { headers: getAuthHeaders() }
-  });
+  const { data: stats, isLoading } = useGetAdminStats();
 
   if (!isAuthenticated) return null;
 

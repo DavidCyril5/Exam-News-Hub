@@ -14,8 +14,7 @@ export default function AdminPostList() {
   const [page, setPage] = useState(1);
   
   const { data, isLoading, refetch } = useGetAdminPosts(
-    { page, limit: 20, status: "all" },
-    { request: { headers: getAuthHeaders() } }
+    { page, limit: 20, status: "all" }
   );
 
   const deleteMutation = useDeletePost();
