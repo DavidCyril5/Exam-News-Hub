@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "installCommand": "pnpm install",
+  "buildCommand": "cd artifacts/examcore-pulse && PORT=3000 BASE_PATH=/ pnpm run build && mv dist/public ../../public",
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.ts" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
