@@ -18,13 +18,17 @@ import type {
 
 import type {
   AddCommentInput,
+  AdminComment,
+  AdminCommentsPage,
   AdminLoginInput,
   AdminLoginResponse,
   AdminStats,
+  ApproveCommentInput,
   Category,
   Comment,
   CreateCategoryInput,
   CreatePostInput,
+  GetAdminCommentsParams,
   GetAdminPostsParams,
   GetPostsParams,
   HealthStatus,
@@ -1060,6 +1064,103 @@ export const useAddComment = <
 };
 
 /**
+ * @summary Get all comments for admin moderation
+ */
+export const getGetAdminCommentsUrl = (params?: GetAdminCommentsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/comments?${stringifiedParams}`
+    : `/api/comments`;
+};
+
+export const getAdminComments = async (
+  params?: GetAdminCommentsParams,
+  options?: RequestInit,
+): Promise<AdminCommentsPage> => {
+  return customFetch<AdminCommentsPage>(getGetAdminCommentsUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAdminCommentsQueryKey = (
+  params?: GetAdminCommentsParams,
+) => {
+  return [`/api/comments`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetAdminCommentsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAdminComments>>,
+  TError = ErrorType<void>,
+>(
+  params?: GetAdminCommentsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAdminComments>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetAdminCommentsQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAdminComments>>
+  > = ({ signal }) => getAdminComments(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminComments>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAdminCommentsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAdminComments>>
+>;
+export type GetAdminCommentsQueryError = ErrorType<void>;
+
+/**
+ * @summary Get all comments for admin moderation
+ */
+
+export function useGetAdminComments<
+  TData = Awaited<ReturnType<typeof getAdminComments>>,
+  TError = ErrorType<void>,
+>(
+  params?: GetAdminCommentsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAdminComments>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAdminCommentsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
  * @summary Delete a comment (admin)
  */
 export const getDeleteCommentUrl = (id: string) => {
@@ -1141,6 +1242,93 @@ export const useDeleteComment = <
   TContext
 > => {
   return useMutation(getDeleteCommentMutationOptions(options));
+};
+
+/**
+ * @summary Approve or reject a comment (admin)
+ */
+export const getApproveCommentUrl = (id: string) => {
+  return `/api/comments/${id}/approve`;
+};
+
+export const approveComment = async (
+  id: string,
+  approveCommentInput: ApproveCommentInput,
+  options?: RequestInit,
+): Promise<AdminComment> => {
+  return customFetch<AdminComment>(getApproveCommentUrl(id), {
+    ...options,
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(approveCommentInput),
+  });
+};
+
+export const getApproveCommentMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof approveComment>>,
+    TError,
+    { id: string; data: BodyType<ApproveCommentInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof approveComment>>,
+  TError,
+  { id: string; data: BodyType<ApproveCommentInput> },
+  TContext
+> => {
+  const mutationKey = ["approveComment"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof approveComment>>,
+    { id: string; data: BodyType<ApproveCommentInput> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return approveComment(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ApproveCommentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof approveComment>>
+>;
+export type ApproveCommentMutationBody = BodyType<ApproveCommentInput>;
+export type ApproveCommentMutationError = ErrorType<void>;
+
+/**
+ * @summary Approve or reject a comment (admin)
+ */
+export const useApproveComment = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof approveComment>>,
+    TError,
+    { id: string; data: BodyType<ApproveCommentInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof approveComment>>,
+  TError,
+  { id: string; data: BodyType<ApproveCommentInput> },
+  TContext
+> => {
+  return useMutation(getApproveCommentMutationOptions(options));
 };
 
 /**

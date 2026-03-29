@@ -114,7 +114,30 @@ export interface Comment {
   avatarColor?: string;
   avatarInitials?: string;
   content: string;
+  approved?: boolean;
   createdAt: string;
+}
+
+export interface AdminComment {
+  _id: string;
+  postId: string;
+  displayName: string;
+  avatarColor?: string;
+  avatarInitials?: string;
+  content: string;
+  approved: boolean;
+  createdAt: string;
+}
+
+export interface AdminCommentsPage {
+  comments: AdminComment[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export interface ApproveCommentInput {
+  approved: boolean;
 }
 
 export interface AddCommentInput {
@@ -166,6 +189,7 @@ export interface AdminStats {
   totalViews: number;
   totalLikes: number;
   totalComments: number;
+  pendingComments: number;
   totalCategories: number;
   recentPosts: Post[];
 }
@@ -181,6 +205,21 @@ export type GetPostsParams = {
   limit?: number;
   search?: string;
 };
+
+export type GetAdminCommentsParams = {
+  status?: GetAdminCommentsStatus;
+  page?: number;
+  limit?: number;
+};
+
+export type GetAdminCommentsStatus =
+  (typeof GetAdminCommentsStatus)[keyof typeof GetAdminCommentsStatus];
+
+export const GetAdminCommentsStatus = {
+  pending: "pending",
+  approved: "approved",
+  all: "all",
+} as const;
 
 export type GetAdminPostsParams = {
   page?: number;

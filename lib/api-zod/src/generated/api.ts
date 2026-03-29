@@ -279,6 +279,7 @@ export const GetCommentsResponseItem = zod.object({
   avatarColor: zod.string().optional(),
   avatarInitials: zod.string().optional(),
   content: zod.string(),
+  approved: zod.boolean().optional(),
   createdAt: zod.string(),
 });
 export const GetCommentsResponse = zod.array(GetCommentsResponseItem);
@@ -297,6 +298,39 @@ export const AddCommentBody = zod.object({
 });
 
 /**
+ * @summary Get all comments for admin moderation
+ */
+export const getAdminCommentsQueryStatusDefault = `all`;
+export const getAdminCommentsQueryPageDefault = 1;
+export const getAdminCommentsQueryLimitDefault = 50;
+
+export const GetAdminCommentsQueryParams = zod.object({
+  status: zod
+    .enum(["pending", "approved", "all"])
+    .default(getAdminCommentsQueryStatusDefault),
+  page: zod.coerce.number().default(getAdminCommentsQueryPageDefault),
+  limit: zod.coerce.number().default(getAdminCommentsQueryLimitDefault),
+});
+
+export const GetAdminCommentsResponse = zod.object({
+  comments: zod.array(
+    zod.object({
+      _id: zod.string(),
+      postId: zod.string(),
+      displayName: zod.string(),
+      avatarColor: zod.string().optional(),
+      avatarInitials: zod.string().optional(),
+      content: zod.string(),
+      approved: zod.boolean(),
+      createdAt: zod.string(),
+    }),
+  ),
+  total: zod.number(),
+  page: zod.number(),
+  totalPages: zod.number(),
+});
+
+/**
  * @summary Delete a comment (admin)
  */
 export const DeleteCommentParams = zod.object({
@@ -306,6 +340,28 @@ export const DeleteCommentParams = zod.object({
 export const DeleteCommentResponse = zod.object({
   success: zod.boolean(),
   message: zod.string(),
+});
+
+/**
+ * @summary Approve or reject a comment (admin)
+ */
+export const ApproveCommentParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const ApproveCommentBody = zod.object({
+  approved: zod.boolean(),
+});
+
+export const ApproveCommentResponse = zod.object({
+  _id: zod.string(),
+  postId: zod.string(),
+  displayName: zod.string(),
+  avatarColor: zod.string().optional(),
+  avatarInitials: zod.string().optional(),
+  content: zod.string(),
+  approved: zod.boolean(),
+  createdAt: zod.string(),
 });
 
 /**
@@ -409,6 +465,7 @@ export const GetAdminStatsResponse = zod.object({
   totalViews: zod.number(),
   totalLikes: zod.number(),
   totalComments: zod.number(),
+  pendingComments: zod.number(),
   totalCategories: zod.number(),
   recentPosts: zod.array(
     zod.object({

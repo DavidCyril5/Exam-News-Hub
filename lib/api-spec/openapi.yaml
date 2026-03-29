@@ -279,6 +279,40 @@ paths:
               schema:
                 $ref: "#/components/schemas/Comment"
 
+  /comments:
+    get:
+      operationId: getAdminComments
+      tags: [comments]
+      summary: Get all comments for admin moderation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, all]
+            default: all
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Paginated list of comments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCommentsPage"
+        "401":
+          description: Unauthorized
+
   /comments/{id}:
     delete:
       operationId: deleteComment
@@ -299,6 +333,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessMessage"
+
+  /comments/{id}/approve:
+    patch:
+      operationId: approveComment
+      tags: [comments]
+      summary: Approve or reject a comment (admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApproveCommentInput"
+      responses:
+        "200":
+          description: Comment approval updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminComment"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
 
   /users/profile:
     post:
@@ -615,6 +680,8 @@ components:
           type: string
         content:
           type: string
+        approved:
+          type: boolean
         createdAt:
           type: string
       required:
@@ -623,6 +690,60 @@ components:
         - displayName
         - content
         - createdAt
+
+    AdminComment:
+      type: object
+      properties:
+        _id:
+          type: string
+        postId:
+          type: string
+        displayName:
+          type: string
+        avatarColor:
+          type: string
+        avatarInitials:
+          type: string
+        content:
+          type: string
+        approved:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - _id
+        - postId
+        - displayName
+        - content
+        - approved
+        - createdAt
+
+    AdminCommentsPage:
+      type: object
+      properties:
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminComment"
+        total:
+          type: integer
+        page:
+          type: integer
+        totalPages:
+          type: integer
+      required:
+        - comments
+        - total
+        - page
+        - totalPages
+
+    ApproveCommentInput:
+      type: object
+      properties:
+        approved:
+          type: boolean
+      required:
+        - approved
 
     AddCommentInput:
       type: object
@@ -723,6 +844,8 @@ components:
           type: integer
         totalComments:
           type: integer
+        pendingComments:
+          type: integer
         totalCategories:
           type: integer
         recentPosts:
@@ -736,6 +859,7 @@ components:
         - totalViews
         - totalLikes
         - totalComments
+        - pendingComments
         - totalCategories
         - recentPosts
 

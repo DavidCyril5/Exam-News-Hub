@@ -21,10 +21,10 @@ export default function CategoryView() {
 
   return (
     <PublicLayout>
-      <div className="bg-secondary text-secondary-foreground py-16 md:py-24 relative overflow-hidden">
+      <div className="bg-secondary text-secondary-foreground py-12 md:py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://pixabay.com/get/g287e7abee32262e46098277baaa1d7597c5a8d228d5ede7f30ad632f11c7432dc1d04c3ab1084131a5f561da9f640fcc5852c0c0505ad0619b49dd683267a2ff_1280.jpg')] opacity-10 mix-blend-overlay object-cover" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <h1 className="text-5xl md:text-6xl font-serif font-bold text-white mb-4 uppercase tracking-wider">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-4 uppercase tracking-wider break-words">
             {slug.replace('-', ' ')} NEWS
           </h1>
           <p className="text-secondary-foreground/80 max-w-2xl mx-auto text-lg">

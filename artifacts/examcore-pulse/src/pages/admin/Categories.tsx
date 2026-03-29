@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { getAuthHeaders } from "@/lib/utils";
 import { useGetCategories, useCreateCategory, useDeleteCategory } from "@workspace/api-client-react";
 
 export default function AdminCategories() {
@@ -24,7 +23,6 @@ export default function AdminCategories() {
     createMutation.mutate(
       { data: { name: newCatName, description: newCatDesc } },
       {
-        request: { headers: getAuthHeaders() },
         onSuccess: () => {
           setNewCatName("");
           setNewCatDesc("");
@@ -40,7 +38,6 @@ export default function AdminCategories() {
       deleteMutation.mutate(
         { id },
         {
-          request: { headers: getAuthHeaders() },
           onSuccess: () => {
             refetch();
             toast({ title: "Category deleted" });
@@ -91,17 +88,17 @@ export default function AdminCategories() {
           ) : (
             categories?.map(cat => (
               <Card key={cat._id} className="rounded-xl border-border/50 shadow-sm hover:border-primary/20 transition-colors">
-                <CardContent className="p-5 flex items-center justify-between">
-                  <div>
-                    <h4 className="font-bold text-lg text-foreground">{cat.name}</h4>
-                    <p className="text-sm text-muted-foreground">{cat.slug}</p>
-                    {cat.description && <p className="text-sm mt-2">{cat.description}</p>}
+                <CardContent className="p-4 sm:p-5 flex items-start sm:items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-base sm:text-lg text-foreground truncate">{cat.name}</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{cat.slug}</p>
+                    {cat.description && <p className="text-xs sm:text-sm mt-1 text-foreground/70 line-clamp-2">{cat.description}</p>}
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-xs font-bold text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs font-bold text-muted-foreground bg-muted px-2 py-1 rounded-full whitespace-nowrap">
                       {cat.postCount || 0} posts
                     </span>
-                    <Button variant="ghost" size="icon" className="text-rose-500 hover:bg-rose-50" onClick={() => handleDelete(cat._id)}>
+                    <Button variant="ghost" size="icon" className="text-rose-500 hover:bg-rose-50 h-8 w-8" onClick={() => handleDelete(cat._id)}>
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>

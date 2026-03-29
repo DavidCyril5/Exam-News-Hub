@@ -6,13 +6,13 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface Comment {
+export interface AdminComment {
   _id: string;
   postId: string;
   displayName: string;
   avatarColor?: string;
   avatarInitials?: string;
   content: string;
-  approved?: boolean;
+  approved: boolean;
   createdAt: string;
 }

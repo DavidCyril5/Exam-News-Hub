@@ -14,6 +14,7 @@ export interface AdminStats {
   totalViews: number;
   totalLikes: number;
   totalComments: number;
+  pendingComments: number;
   totalCategories: number;
   recentPosts: Post[];
 }
