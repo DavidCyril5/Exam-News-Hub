@@ -17,6 +17,8 @@ export interface IPost extends Document {
   status: "draft" | "published";
   views: number;
   likedBy: string[];
+  pdfDownloadEnabled: boolean;
+  pdfButtonLabel: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +41,8 @@ const PostSchema = new Schema<IPost>(
     status: { type: String, enum: ["draft", "published"], default: "draft" },
     views: { type: Number, default: 0 },
     likedBy: [{ type: String }],
+    pdfDownloadEnabled: { type: Boolean, default: true },
+    pdfButtonLabel: { type: String, default: "Download Timetable PDF" },
   },
   { timestamps: true }
 );

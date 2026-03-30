@@ -95,7 +95,7 @@ router.get("/", async (req, res) => {
 
 router.post("/", requireAdmin, async (req, res) => {
   try {
-    const { title, content, excerpt, categoryId, images, coverImage, status } = req.body;
+    const { title, content, excerpt, categoryId, images, coverImage, status, pdfDownloadEnabled, pdfButtonLabel } = req.body;
     const slug = toSlug(title);
     const post = await Post.create({
       title,
@@ -106,6 +106,8 @@ router.post("/", requireAdmin, async (req, res) => {
       images: images || [],
       coverImage: coverImage || "",
       status: status || "draft",
+      pdfDownloadEnabled: pdfDownloadEnabled !== undefined ? pdfDownloadEnabled : true,
+      pdfButtonLabel: pdfButtonLabel || "Download Timetable PDF",
     });
     const populated = await Post.findById(post._id).populate("category").lean();
     res.status(201).json(formatPost({ toObject: () => populated, ...populated }));
@@ -147,9 +149,11 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", requireAdmin, async (req, res) => {
   try {
-    const { title, content, excerpt, categoryId, images, coverImage, status } = req.body;
+    const { title, content, excerpt, categoryId, images, coverImage, status, pdfDownloadEnabled, pdfButtonLabel } = req.body;
     const update: any = { title, content, excerpt, images, coverImage, status };
     if (categoryId) update.category = categoryId;
+    if (pdfDownloadEnabled !== undefined) update.pdfDownloadEnabled = pdfDownloadEnabled;
+    if (pdfButtonLabel !== undefined) update.pdfButtonLabel = pdfButtonLabel;
 
     const post = await Post.findByIdAndUpdate(req.params.id, update, { new: true })
       .populate("category")
