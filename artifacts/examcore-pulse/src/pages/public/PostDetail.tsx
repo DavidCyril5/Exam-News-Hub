@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRoute } from "wouter";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
-import { Eye, Heart, MessageCircle, Clock, Share2, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Eye, Heart, MessageCircle, Clock, Share2, ChevronLeft, ChevronRight, X, Download } from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,46 @@ export default function PostDetail() {
 
   // State for image gallery viewer
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
-  
+
+  // State for share button
+  const [copied, setCopied] = useState(false);
+
+  // State for PDF download
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadPDF = () => {
+    if (!post || downloading) return;
+    setDownloading(true);
+    const pdfUrl = `/api/posts/${post._id}/timetable.pdf`;
+    const a = document.createElement("a");
+    a.href = pdfUrl;
+    a.download = "";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => setDownloading(false), 3000);
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const title = post?.title || "EXAMCORE PULSE";
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+      } catch {
+        // user dismissed the sheet — do nothing
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        toast({ title: "Could not copy link", description: url });
+      }
+    }
+  };
+
   // State for commenting
   const [commentText, setCommentText] = useState("");
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
@@ -207,10 +246,23 @@ export default function PostDetail() {
             <span className="font-bold">{post.likesCount || 0} Likes</span>
           </Button>
           
-          <Button variant="outline" size="lg" className="rounded-full gap-2">
+          <Button variant="outline" size="lg" className="rounded-full gap-2" onClick={handleShare}>
             <Share2 className="w-5 h-5" />
-            Share
+            {copied ? "Copied!" : "Share"}
           </Button>
+
+          {post.images && post.images.length > 0 && (
+            <Button
+              variant="outline"
+              size="lg"
+              className="rounded-full gap-2 border-primary/40 text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+              onClick={handleDownloadPDF}
+              disabled={downloading}
+            >
+              <Download className="w-5 h-5" />
+              {downloading ? "Preparing…" : "Download Timetable PDF"}
+            </Button>
+          )}
         </div>
 
         {/* Comments Section */}

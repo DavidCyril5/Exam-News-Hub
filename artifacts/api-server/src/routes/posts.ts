@@ -1,4 +1,5 @@
 import { Router } from "express";
+import PDFDocument from "pdfkit";
 import { Post } from "../db/models/Post";
 import { Category } from "../db/models/Category";
 import { Comment } from "../db/models/Comment";
@@ -201,6 +202,94 @@ router.post("/:id/like", async (req, res) => {
   } catch (err) {
     req.log.error({ err }, "Failed to toggle like");
     res.status(500).json({ error: "Failed to toggle like" });
+  }
+});
+
+// Generate a timetable PDF from the post's gallery images
+router.get("/:id/timetable.pdf", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id).lean();
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    const images: Array<{ url: string; title?: string; caption?: string }> = (post as any).images || [];
+    if (images.length === 0) return res.status(404).json({ error: "This post has no timetable images" });
+
+    // Fetch all image buffers in parallel
+    const buffers: Array<{ buf: Buffer; mime: string; title?: string; caption?: string } | null> =
+      await Promise.all(
+        images.map(async (img) => {
+          try {
+            const r = await fetch(img.url);
+            if (!r.ok) return null;
+            const arrayBuf = await r.arrayBuffer();
+            const contentType = r.headers.get("content-type") || "image/jpeg";
+            return { buf: Buffer.from(arrayBuf), mime: contentType, title: img.title, caption: img.caption };
+          } catch {
+            return null;
+          }
+        })
+      );
+
+    const valid = buffers.filter(Boolean) as Array<{ buf: Buffer; mime: string; title?: string; caption?: string }>;
+    if (valid.length === 0) return res.status(500).json({ error: "Could not download any images" });
+
+    const safeTitle = ((post as any).title as string || "timetable")
+      .replace(/[^a-z0-9 ]/gi, " ")
+      .trim()
+      .replace(/\s+/g, "-")
+      .toLowerCase();
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${safeTitle}.pdf"`);
+
+    const doc = new PDFDocument({ autoFirstPage: false, margin: 0, bufferPages: true });
+    doc.pipe(res);
+
+    for (const item of valid) {
+      // Read image dimensions via pdfkit
+      const img = doc.openImage(item.buf);
+      const A4_W = 595.28;
+      const A4_H = 841.89;
+      const PADDING = 20;
+      const availW = A4_W - PADDING * 2;
+      const availH = A4_H - PADDING * 2 - (item.title || item.caption ? 40 : 0);
+
+      const scale = Math.min(availW / img.width, availH / img.height);
+      const drawW = img.width * scale;
+      const drawH = img.height * scale;
+      const x = (A4_W - drawW) / 2;
+      const captionOffset = item.title || item.caption ? 36 : 0;
+      const y = (A4_H - drawH - captionOffset) / 2;
+
+      doc.addPage({ size: "A4" });
+
+      if (item.title) {
+        doc.fontSize(13).font("Helvetica-Bold").fillColor("#1a1a1a")
+          .text(item.title, PADDING, PADDING, { width: availW, align: "center" });
+      }
+      if (item.caption) {
+        doc.fontSize(10).font("Helvetica").fillColor("#555555")
+          .text(item.caption, PADDING, item.title ? PADDING + 18 : PADDING, { width: availW, align: "center" });
+      }
+
+      doc.image(item.buf, x, y + captionOffset, { width: drawW, height: drawH });
+    }
+
+    // Footer on every page
+    const pages = doc.bufferedPageRange();
+    for (let i = 0; i < pages.count; i++) {
+      doc.switchToPage(pages.start + i);
+      doc.fontSize(8).font("Helvetica").fillColor("#aaaaaa")
+        .text(
+          `EXAMCORE PULSE  •  Page ${i + 1} of ${pages.count}  •  examcore-pulse`,
+          0, 825, { width: 595.28, align: "center" }
+        );
+    }
+
+    doc.end();
+  } catch (err) {
+    req.log.error({ err }, "Failed to generate timetable PDF");
+    if (!res.headersSent) res.status(500).json({ error: "Failed to generate PDF" });
   }
 });
 
