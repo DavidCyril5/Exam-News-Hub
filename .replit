@@ -35,8 +35,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "PORT=22967 BASE_PATH=/ pnpm --filter @workspace/examcore-pulse run dev"
-waitForPort = 22967
+args = "echo 'Services are managed by artifact workflows' && sleep infinity"
 
 [agent]
 stack = "PNPM_WORKSPACE"
