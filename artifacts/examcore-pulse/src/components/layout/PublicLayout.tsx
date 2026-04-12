@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { BookOpen, Sun, Moon, Palette, Menu, X, ChevronRight, Send } from "lucide-react";
 import { ReactNode, useState, useRef, useEffect } from "react";
 import { useTheme, ACCENT_COLORS, type AccentColor } from "@/hooks/use-theme";
+import { NotificationButton } from "@/components/shared/NotificationButton";
 
 const NAV_LINKS = [
   { href: "/category/jamb", label: "JAMB" },
@@ -61,6 +62,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
             ))}
 
             <div className="flex items-center gap-2">
+              <NotificationButton />
               <button
                 onClick={toggleMode}
                 className="w-9 h-9 rounded-full flex items-center justify-center border border-border text-muted-foreground hover:text-primary hover:border-primary transition-all duration-200"

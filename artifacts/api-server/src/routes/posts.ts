@@ -4,6 +4,7 @@ import { Post } from "../db/models/Post";
 import { Category } from "../db/models/Category";
 import { Comment } from "../db/models/Comment";
 import { requireAdmin } from "../middlewares/auth";
+import { sendPushToAll } from "../lib/push";
 
 const router = Router();
 
@@ -110,6 +111,14 @@ router.post("/", requireAdmin, async (req, res) => {
       pdfButtonLabel: pdfButtonLabel || "Download Timetable PDF",
     });
     const populated = await Post.findById(post._id).populate("category").lean();
+    if (status === "published") {
+      sendPushToAll({
+        title: `New Post: ${title}`,
+        body: excerpt || "A new article has been published on EXAMCORE PULSE.",
+        icon: "/favicon.svg",
+        url: `/post/${post._id}`,
+      }).catch(() => {});
+    }
     res.status(201).json(formatPost({ toObject: () => populated, ...populated }));
   } catch (err) {
     req.log.error({ err }, "Failed to create post");
@@ -155,12 +164,21 @@ router.put("/:id", requireAdmin, async (req, res) => {
     if (pdfDownloadEnabled !== undefined) update.pdfDownloadEnabled = pdfDownloadEnabled;
     if (pdfButtonLabel !== undefined) update.pdfButtonLabel = pdfButtonLabel;
 
+    const previous = await Post.findById(req.params.id).lean();
     const post = await Post.findByIdAndUpdate(req.params.id, update, { new: true })
       .populate("category")
       .lean();
     if (!post) {
       res.status(404).json({ error: "Post not found" });
       return;
+    }
+    if (status === "published" && (previous as any)?.status !== "published") {
+      sendPushToAll({
+        title: `New Post: ${title}`,
+        body: excerpt || "A new article has been published on EXAMCORE PULSE.",
+        icon: "/favicon.svg",
+        url: `/post/${post._id}`,
+      }).catch(() => {});
     }
     res.json(formatPost({ toObject: () => post, ...post }));
   } catch (err) {

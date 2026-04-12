@@ -3,6 +3,10 @@ import App from "./App";
 import "./index.css";
 import { setAuthTokenGetter } from "@workspace/api-client-react";
 
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
+}
+
 // Register a global auth token getter so every API call automatically
 // attaches the admin JWT when present — no need to pass headers manually.
 // Note: useLocalStorage stores values as JSON.stringify'd, so we must
