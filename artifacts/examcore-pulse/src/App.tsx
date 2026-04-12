@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { NotificationPrompt } from "@/components/shared/NotificationPrompt";
 
 import Home from "@/pages/public/Home";
 import CategoryView from "@/pages/public/CategoryView";
@@ -55,6 +56,7 @@ function App() {
         <TooltipProvider>
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <Router />
+            <NotificationPrompt />
           </WouterRouter>
           <Toaster />
         </TooltipProvider>
