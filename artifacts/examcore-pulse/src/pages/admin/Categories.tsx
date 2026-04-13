@@ -49,15 +49,15 @@ export default function AdminCategories() {
 
   return (
     <AdminLayout>
-      <div className="mb-8">
-        <h1 className="text-3xl font-serif font-bold text-foreground">Categories</h1>
-        <p className="text-muted-foreground mt-1">Manage post categories like WAEC, JAMB, etc.</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-foreground">Categories</h1>
+        <p className="text-muted-foreground mt-1 text-sm sm:text-base">Manage post categories like WAEC, JAMB, etc.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Create Form */}
         <div className="lg:col-span-1">
-          <Card className="rounded-2xl border-border/50 shadow-sm sticky top-24">
+          <Card className="rounded-2xl border-border/50 shadow-sm lg:sticky lg:top-24">
             <CardContent className="p-6">
               <h3 className="font-bold text-lg mb-4">Add New Category</h3>
               <form onSubmit={handleCreate} className="space-y-4">

@@ -72,10 +72,10 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-6 sm:mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">Overview of your platform's performance.</p>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">Overview of your platform's performance.</p>
         </div>
       </div>
 
@@ -86,18 +86,20 @@ export default function AdminDashboard() {
       ) : stats ? (
         <>
           {stats.pendingComments > 0 && (
-            <div className="mb-6 flex items-center gap-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl px-5 py-4">
-              <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center flex-shrink-0">
-                <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-amber-800 dark:text-amber-300">
-                  {stats.pendingComments} comment{stats.pendingComments !== 1 ? "s" : ""} awaiting approval
-                </p>
-                <p className="text-sm text-amber-700 dark:text-amber-400">Review and approve pending comments to make them visible on posts.</p>
+            <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl px-4 sm:px-5 py-4">
+              <div className="flex items-center gap-3 flex-1">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center flex-shrink-0">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-amber-800 dark:text-amber-300 text-sm sm:text-base">
+                    {stats.pendingComments} comment{stats.pendingComments !== 1 ? "s" : ""} awaiting approval
+                  </p>
+                  <p className="text-xs sm:text-sm text-amber-700 dark:text-amber-400">Review and approve pending comments to make them visible on posts.</p>
+                </div>
               </div>
               <Link href="/admin/comments">
-                <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white shrink-0">
+                <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white w-full sm:w-auto">
                   Review Now
                 </Button>
               </Link>
