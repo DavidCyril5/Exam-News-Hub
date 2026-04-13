@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, useRoute } from "wouter";
-import { ImagePlus, Save, ArrowLeft, X, Download } from "lucide-react";
+import { ImagePlus, Save, ArrowLeft, Download, Trash2, RefreshCw } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,6 +78,19 @@ export default function PostEditor() {
       onSuccess: (res) => {
         setImages(prev => [...prev, { url: res.url, title: "", caption: "" }]);
         toast({ title: "Gallery image added" });
+      }
+    });
+  };
+
+  const handleReplaceGalleryImage = async (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+    toast({ title: "Replacing image..." });
+    uploadMutation.mutate({ data: { file } }, {
+      onSuccess: (res) => {
+        setImages(prev => prev.map((img, i) => i === idx ? { ...img, url: res.url } : img));
+        toast({ title: "Image replaced" });
       }
     });
   };
@@ -166,39 +179,59 @@ export default function PostEditor() {
               {images.length > 0 ? (
                 <div className="space-y-4">
                   {images.map((img, idx) => (
-                    <div key={idx} className="p-3 sm:p-4 border rounded-xl bg-muted/20 space-y-3">
-                      {/* Image preview + delete */}
-                      <div className="flex items-start gap-3">
-                        <img src={img.url} className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg shrink-0" alt="" />
-                        <div className="flex-1 min-w-0 space-y-2">
-                          <Input
-                            placeholder="Image Title (e.g. WAEC Timetable 2024)"
-                            value={img.title}
-                            onChange={e => {
-                              const newImgs = [...images];
-                              newImgs[idx].title = e.target.value;
-                              setImages(newImgs);
-                            }}
+                    <div key={idx} className="border rounded-xl bg-muted/20 overflow-hidden">
+                      {/* Image preview with action bar */}
+                      <div className="relative">
+                        <img
+                          src={img.url}
+                          className="w-full aspect-[16/9] object-cover"
+                          alt={img.title || `Gallery image ${idx + 1}`}
+                        />
+                        <div className="absolute top-2 right-2 flex gap-1.5">
+                          <label
+                            htmlFor={`galleryReplace-${idx}`}
+                            className="cursor-pointer w-8 h-8 rounded-full bg-black/70 hover:bg-primary text-white flex items-center justify-center transition-colors shadow-lg"
+                            title="Replace image"
+                          >
+                            <RefreshCw className="w-3.5 h-3.5" />
+                          </label>
+                          <input
+                            type="file"
+                            id={`galleryReplace-${idx}`}
+                            className="hidden"
+                            accept="image/*"
+                            onChange={e => handleReplaceGalleryImage(e, idx)}
                           />
-                          <Input
-                            placeholder="Caption (optional)"
-                            value={img.caption}
-                            onChange={e => {
-                              const newImgs = [...images];
-                              newImgs[idx].caption = e.target.value;
-                              setImages(newImgs);
-                            }}
-                          />
+                          <button
+                            type="button"
+                            className="w-8 h-8 rounded-full bg-black/70 hover:bg-rose-600 text-white flex items-center justify-center transition-colors shadow-lg"
+                            title="Delete image"
+                            onClick={() => setImages(images.filter((_, i) => i !== idx))}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-rose-500 shrink-0 h-8 w-8"
-                          type="button"
-                          onClick={() => setImages(images.filter((_, i) => i !== idx))}
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
+                      </div>
+                      {/* Title & caption */}
+                      <div className="p-3 space-y-2">
+                        <Input
+                          placeholder="Image Title (e.g. WAEC Timetable 2024)"
+                          value={img.title}
+                          onChange={e => {
+                            const newImgs = [...images];
+                            newImgs[idx].title = e.target.value;
+                            setImages(newImgs);
+                          }}
+                        />
+                        <Input
+                          placeholder="Caption (optional)"
+                          value={img.caption}
+                          onChange={e => {
+                            const newImgs = [...images];
+                            newImgs[idx].caption = e.target.value;
+                            setImages(newImgs);
+                          }}
+                        />
                       </div>
                     </div>
                   ))}
@@ -277,21 +310,35 @@ export default function PostEditor() {
             <Card className="p-4 sm:p-6">
               <label className="text-sm font-bold mb-3 block">Cover Image</label>
               {coverImage ? (
-                <div className="relative aspect-[16/9] rounded-xl overflow-hidden mb-4 group border border-border">
-                  <img src={coverImage} className="w-full h-full object-cover" alt="Cover" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Button variant="destructive" size="sm" type="button" onClick={() => setCoverImage("")}>Remove</Button>
+                <div className="mb-4 space-y-2">
+                  <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-border">
+                    <img src={coverImage} className="w-full h-full object-cover" alt="Cover" />
+                    <button
+                      type="button"
+                      onClick={() => setCoverImage("")}
+                      className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 hover:bg-rose-600 text-white flex items-center justify-center transition-colors shadow-lg"
+                      title="Remove cover image"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
+                  <input type="file" id="coverUpload" className="hidden" accept="image/*" onChange={handleUploadCover} />
+                  <label htmlFor="coverUpload" className="cursor-pointer flex items-center justify-center w-full rounded-md text-sm font-medium h-10 px-4 py-2 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors">
+                    <RefreshCw className="w-4 h-4 mr-2" /> Change Image
+                  </label>
                 </div>
               ) : (
-                <div className="aspect-[16/9] rounded-xl border-2 border-dashed border-border flex items-center justify-center bg-muted/30 mb-4">
-                  <span className="text-sm text-muted-foreground">No cover image</span>
-                </div>
+                <>
+                  <div className="aspect-[16/9] rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center bg-muted/30 mb-3 gap-2">
+                    <ImagePlus className="w-8 h-8 text-muted-foreground/50" />
+                    <span className="text-sm text-muted-foreground">No cover image</span>
+                  </div>
+                  <input type="file" id="coverUpload" className="hidden" accept="image/*" onChange={handleUploadCover} />
+                  <label htmlFor="coverUpload" className="cursor-pointer flex items-center justify-center w-full rounded-md text-sm font-medium h-10 px-4 py-2 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 transition-colors">
+                    <ImagePlus className="w-4 h-4 mr-2" /> Upload Cover Image
+                  </label>
+                </>
               )}
-              <input type="file" id="coverUpload" className="hidden" accept="image/*" onChange={handleUploadCover} />
-              <label htmlFor="coverUpload" className="cursor-pointer flex items-center justify-center w-full rounded-md text-sm font-medium h-10 px-4 py-2 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80">
-                <ImagePlus className="w-4 h-4 mr-2" /> {coverImage ? "Change Image" : "Upload Cover"}
-              </label>
             </Card>
           </div>
         </div>
