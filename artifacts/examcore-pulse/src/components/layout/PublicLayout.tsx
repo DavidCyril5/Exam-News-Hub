@@ -112,8 +112,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
           </nav>
 
           {/* Mobile Controls */}
-          <div className="flex md:hidden items-center gap-1.5">
-            <NotificationButton />
+          <div className="flex md:hidden items-center gap-2">
             <button
               onClick={toggleMode}
               className="w-9 h-9 rounded-full flex items-center justify-center border border-border text-muted-foreground"
