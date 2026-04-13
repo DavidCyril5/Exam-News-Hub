@@ -35,17 +35,17 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-secondary relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-secondary relative overflow-hidden px-4 py-10">
       <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop')]" />
       
-      <div className="relative z-10 w-full max-w-md p-8 bg-card rounded-3xl shadow-2xl border border-border/10">
-        <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-primary/20">
-          <Lock className="h-8 w-8 text-primary-foreground" />
+      <div className="relative z-10 w-full max-w-md p-6 sm:p-8 bg-card rounded-3xl shadow-2xl border border-border/10">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary/20">
+          <Lock className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground" />
         </div>
         
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-serif font-bold text-foreground">Admin Portal</h1>
-          <p className="text-muted-foreground mt-2">Sign in to EXAMCORE PULSE</p>
+        <div className="text-center mb-7 sm:mb-10">
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-foreground">Admin Portal</h1>
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">Sign in to EXAMCORE PULSE</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
